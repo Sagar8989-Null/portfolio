@@ -22,7 +22,7 @@ function Hero() {
           </div>
           <div className="hero-image">
             <img
-              src="/images/hero.png"
+              src="images/hero.png"
               alt="Developer workspace"
             />
           </div>

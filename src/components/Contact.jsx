@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { saveFormData, saveToLocalStorage, downloadAllSubmissions } from '../utils/formStorage';
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -16,13 +17,25 @@ function Contact() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: '', email: '', message: '' });
-    }, 3000);
+    
+    try {
+      // Save form data to JSON file (downloads automatically)
+      await saveFormData(formData);
+      
+      // Also save to localStorage for persistence
+      saveToLocalStorage(formData);
+      
+      setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({ name: '', email: '', message: '' });
+      }, 3000);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('There was an error submitting your form. Please try again.');
+    }
   };
 
   return (
@@ -52,7 +65,7 @@ function Contact() {
           <form onSubmit={handleSubmit} className="contact-form">
             {submitted && (
               <div className="form-success">
-                Thank you for your message! I'll get back to you soon.
+                Thank you for your message! Your form data has been saved to a JSON file and I'll get back to you soon.
               </div>
             )}
             <div className="form-group">
@@ -90,6 +103,17 @@ function Contact() {
             </div>
             <button type="submit" className="btn btn-primary">Send Message</button>
           </form>
+          
+          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              onClick={downloadAllSubmissions}
+              style={{ fontSize: '14px', padding: '8px 16px' }}
+            >
+              Download All Submissions
+            </button>
+          </div>
         </div>
       </div>
     </section>
